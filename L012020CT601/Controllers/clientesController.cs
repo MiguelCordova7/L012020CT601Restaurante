@@ -10,11 +10,11 @@ namespace L012020CT601.Controllers
     [ApiController]
     public class clientesController : ControllerBase
     {
-        private readonly clientesController _clientesController;
+        private readonly restauranteContext _restauranteContexto;
 
-        public clientesController(clientesController clientesController)
+        public clientesController (restauranteContext restauranteContexto)
         {
-            _clientesController = clientesController;
+            _restauranteContexto = restauranteContexto;
         }
 
         [HttpGet]
@@ -22,7 +22,7 @@ namespace L012020CT601.Controllers
 
         public IActionResult Get()
         {
-            List <clientes> listadoClientes= (from e in _clientesContexto._clientesController
+            List <clientes> listadoClientes= (from e in _restauranteContexto.clientes
                                               select e).ToList();
             if (listadoClientes.Count == 0)
             {
@@ -30,6 +30,88 @@ namespace L012020CT601.Controllers
             }
 
             return Ok(listadoClientes);
+        }
+
+        [HttpPost]
+        [Route("Add")]
+
+        public IActionResult GuardarCliente([FromBody] clientes cliente)
+        {
+
+            try
+            {
+                _restauranteContexto.clientes.Add(cliente);
+                _restauranteContexto.SaveChanges();
+                return Ok(cliente);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("Actualizar/(id)")]
+
+        public IActionResult Actualizarcliente(int id, [FromBody] clientes clienteModificar)
+        {
+
+            clientes? clienteActual = (from e in _restauranteContexto.clientes
+                                     where e.clienteId == id
+                                     select e).FirstOrDefault();
+
+
+            if (clienteActual == null)
+            { return NotFound(); }
+
+
+            clienteActual.clienteId = clienteModificar.clienteId;
+            clienteActual.nombreCliente = clienteModificar.nombreCliente;
+            clienteActual.direccion = clienteModificar.direccion;
+           
+            _restauranteContexto.Entry(clienteActual).State = EntityState.Modified;
+            _restauranteContexto.SaveChanges();
+
+            return Ok(clienteModificar);
+        }
+
+        [HttpDelete]
+        [Route("eliminar/(id)")]
+
+        public IActionResult EliminarCliente(int id)
+        {
+
+            clientes? cliente = (from e in _restauranteContexto.clientes
+                               where e.clienteId == id
+                      select e).FirstOrDefault();
+
+            
+
+            if (cliente == null)
+                return NotFound();
+
+            _restauranteContexto.clientes.Attach(cliente);
+            _restauranteContexto.clientes.Remove(cliente);
+            _restauranteContexto.SaveChanges();
+            return Ok(cliente);
+
+        }
+
+        [HttpGet]
+        [Route("Find/{filtro}")]
+
+        public IActionResult FinByDescription(string filtro)
+        {
+
+            clientes? cliente = (from e in _restauranteContexto.clientes
+                                 where e.direccion.Contains(filtro)
+                                 select e).FirstOrDefault();
+
+            if (cliente == null)
+            {
+                return NotFound();
+            }
+            return Ok(cliente);
         }
     }
 }

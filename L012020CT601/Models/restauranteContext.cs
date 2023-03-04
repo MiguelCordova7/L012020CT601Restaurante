@@ -8,11 +8,15 @@ namespace L012020CT601.Models
             public restauranteContext(DbContextOptions<restauranteContext> options) : base(options)
             {
 
-         
-            
             }
 
-            public DbSet<restauranteContext> restaurantes { get; set; }
+            public DbSet<clientes> clientes { get; set; }
+            
+            public DbSet<pedidos> pedidos { get; set; }
+
+            public DbSet<platos> platos { get; set; } 
+
+            public DbSet<motoristas> motoristas { get; set;}
     
     }
 }

@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<restauranteContext> (options =>
                              options.UseSqlServer(
-                                 builder.Configuration.GetConnectionString("RestauranteDbConnection")
+                                 builder.Configuration.GetConnectionString("restauranteDbConnection")
                                  )
                              );
 
